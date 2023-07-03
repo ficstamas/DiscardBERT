@@ -1,0 +1,7 @@
+torch==2.0.*
+transformers==4.30.*
+datasets==2.13.*
+evaluate==0.4.*
+tqdm
+numpy
+wandb
