@@ -1,5 +1,4 @@
-from transformers import PreTrainedModel, TrainingArguments, Trainer, IntervalStrategy, DataCollatorWithPadding, \
-    PreTrainedTokenizer
+from transformers import TrainingArguments, Trainer, IntervalStrategy, DataCollatorWithPadding
 from datasets import Dataset, DatasetDict
 import tqdm
 from torch.optim import Optimizer
@@ -9,6 +8,7 @@ import wandb
 from typing import Callable, Optional
 from .padding import to_torch
 from .base import Training
+from discardbert.utils.layers import assign_new_layers, retrieve_layers
 
 
 class Simple(Training):
@@ -27,6 +27,7 @@ class Simple(Training):
         :param use_wandb: Whether to use Wandb
         :return:
         """
+        self.apply_elimination()
         model = self.model
         model.train()
         dataset.set_format("torch")
@@ -92,3 +93,10 @@ class Simple(Training):
             "dev": dev,
             "test": test
         }
+
+    def apply_elimination(self):
+        layers = retrieve_layers(self.model)
+        params = {k: v for k, v in self.elimination_params if k in self.elimination.get_extra_params()}
+        layers = self.elimination.discard(layers, **params)
+        assign_new_layers(self.model, layers)
+        self.model.config.num_hidden_layers = len(layers)

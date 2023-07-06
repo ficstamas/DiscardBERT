@@ -20,6 +20,9 @@ class ExactLayerEliminationStrategy(LayerEliminationStrategy):
             new_dict[str(new_index)] = copy.deepcopy(layers[str(layer)])
         return new_dict
 
+    def get_extra_params(self):
+        return ["exact_layers"]
+
 
 class RangeBasedLayerEliminationStrategy(ExactLayerEliminationStrategy):
     def discard(self, layers: OrderedDict, *args, **kwargs) -> OrderedDict:
@@ -36,3 +39,6 @@ class RangeBasedLayerEliminationStrategy(ExactLayerEliminationStrategy):
         return ExactLayerEliminationStrategy.discard(
             self, layers, exact_layers=[i for i in range(exact_layers[0], exact_layers[1])]
         )
+
+    def get_extra_params(self):
+        return ["range"]
