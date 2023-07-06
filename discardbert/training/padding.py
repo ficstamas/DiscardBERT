@@ -1,4 +1,7 @@
 import torch
+from discardbert.model.task_type import ModelType
+from typing import Dict, Callable
+from torch import Tensor
 
 
 def to_torch(batch, device):
@@ -10,7 +13,7 @@ def to_torch(batch, device):
     return b
 
 
-def dynamic_padding_sequence_classification(batch, device):
+def dynamic_padding_sequence_classification(batch: Dict[str, Tensor], device: str) -> Dict[str, Tensor]:
     features = ['input_ids', 'attention_mask', 'token_type_ids']
     max_len = max([len(b) for b in batch['input_ids']])
 
@@ -22,7 +25,7 @@ def dynamic_padding_sequence_classification(batch, device):
     return b
 
 
-def dynamic_padding_token_classification(batch, device):
+def dynamic_padding_token_classification(batch: Dict[str, Tensor], device: str) -> Dict[str, Tensor]:
     features = ['input_ids', 'attention_mask', 'token_type_ids', 'labels']
     max_len = max([len(b) for b in batch['input_ids']])
 
@@ -35,3 +38,9 @@ def dynamic_padding_token_classification(batch, device):
             b[f] = torch.stack(
                 [torch.nn.functional.pad(t, (0, max_len - t.shape[-1]), value=-100) for t in batch[f]]).to(device)
     return b
+
+
+STR2PADDING: Dict[ModelType, Callable[[Dict[str, Tensor], str], Dict[str, Tensor]]] = {
+    "sequence": dynamic_padding_sequence_classification,
+    "token": dynamic_padding_token_classification
+}
