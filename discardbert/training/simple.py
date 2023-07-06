@@ -96,7 +96,7 @@ class Simple(Training):
 
     def apply_elimination(self):
         layers = retrieve_layers(self.model)
-        params = {k: v for k, v in self.elimination_params if k in self.elimination.get_extra_params()}
+        params = {k: v for k, v in self.elimination_params.items() if k in self.elimination.get_extra_params()}
         layers = self.elimination.discard(layers, **params)
         assign_new_layers(self.model, layers)
         self.model.config.num_hidden_layers = len(layers)

@@ -14,7 +14,7 @@ class Loop:
     def __init__(self, model_name: str, model_type: ModelType, tokenizer_name: str, tokenizer_params: dict,
                  dataset_name: DatasetType, subset_name: SubsetType,
                  training_method: TrainingType, elimination: EliminationType, elimination_params: dict,
-                 pre_evaluation: bool, optimizer: Type[Optimizer] = None, optimizer_params: dict = None,):
+                 pre_evaluation: bool, optimizer: Type[Optimizer] = None, optimizer_params: dict = None):
         if tokenizer_params is None:
             tokenizer_params = {}
         if optimizer_params is None:
@@ -29,12 +29,16 @@ class Loop:
         self.tokenized_dataset = self.dataset.map(self.tokenizer.tokenize, batched=True)
         self.metrics = STR2METRICS[dataset_name][subset_name](dataset=dataset_name, subset=subset_name)
         self.training = STR2TRAINING[training_method](
-            self.model, self.tokenizer.tokenizer, elimination, **elimination_params
+            self.model, self.tokenizer.tokenizer, elimination, elimination_params
         )
 
     def train(self, lr_scheduler: str, lr_scheduler_params: dict, batch_size: int, num_epoch: int,
               logging_interval: int, use_wandb: bool, **kwargs):
         lr_scheduler_params["optimizer"] = self.optimizer
+
+        if lr_scheduler_params["num_training_steps"] is None:
+            lr_scheduler_params["num_training_steps"] = len(self.dataset["train"]) // batch_size
+
         scheduler = get_scheduler(lr_scheduler, **lr_scheduler_params)
 
         if self.pre_evaluation:

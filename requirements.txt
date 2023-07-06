@@ -5,3 +5,6 @@ evaluate==0.4.*
 tqdm
 numpy
 wandb
+scipy
+scikit-learn
+accelerate
