@@ -113,4 +113,4 @@ loop.train(
     use_wandb=args.use_wandb
 )
 
-loop.eval()
+loop.eval(use_wandb=args.use_wandb)

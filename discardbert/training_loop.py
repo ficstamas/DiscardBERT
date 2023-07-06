@@ -42,10 +42,10 @@ class Loop:
         scheduler = get_scheduler(lr_scheduler, **lr_scheduler_params)
 
         if self.pre_evaluation:
-            self.eval(prefix="pre-eval")
+            self.eval(prefix="pre-eval", use_wandb=use_wandb)
 
         self.training.train(self.optimizer, scheduler, self.tokenized_dataset["train"], self.padding_fn,
                             batch_size, num_epoch, logging_interval, use_wandb, **kwargs)
 
-    def eval(self, prefix="eval"):
-        self.training.eval(self.tokenized_dataset, self.metrics.compute_metrics, prefix=prefix)
+    def eval(self, prefix="eval", use_wandb=False):
+        self.training.eval(self.tokenized_dataset, self.metrics.compute_metrics, prefix=prefix, use_wandb=use_wandb)

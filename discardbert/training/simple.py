@@ -78,7 +78,8 @@ class Simple(Training):
 
         model.eval()
         training_args = TrainingArguments("~/temp/", do_eval=True, do_train=False,
-                                          logging_strategy=IntervalStrategy.EPOCH, save_strategy=IntervalStrategy.NO)
+                                          logging_strategy=IntervalStrategy.EPOCH, save_strategy=IntervalStrategy.NO,
+                                          report_to=["wandb"] if kwargs.get("use_wandb", False) else ["none"])
 
         trainer = Trainer(
             model, training_args, DataCollatorWithPadding(tokenizer),
