@@ -60,6 +60,7 @@ recursive.add_argument("--selection_criteria", default="best", choices=["best"],
 recursive.add_argument("--max_depth", default=-1, type=int, help="Exit after reaching maximum depth")
 recursive.add_argument("--max_tolerance", default=0.95, type=float, help="Exit after tolerance reached")
 recursive.add_argument("--dilation_step", default=1, type=int, help="How many blocks of layers to jump")
+recursive.add_argument("--target_metrics", default="f1", help="Metric to use for validation")
 
 args, _ = args_.parse_known_args()
 
@@ -101,7 +102,7 @@ trainer_params = {
         "max_tolerance": args.max_tolerance,
         "selection_criteria": args.selection_criteria
     },
-    "target_metrics": "f1",
+    "target_metrics": args.target_metrics,
     "dilation_step": args.dilation_step
 }
 
