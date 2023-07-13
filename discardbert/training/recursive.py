@@ -24,9 +24,9 @@ class Recursive(Simple):
             if self.exit_params["max_depth"] != -1 \
             else num_layers // self.dilation_step + 1
         self.metrics = {
-            "train": np.zeros((max_depth, num_layers, num_layers)) * -np.inf,
-            "dev":   np.zeros((max_depth, num_layers, num_layers)) * -np.inf,
-            "test":  np.zeros((max_depth, num_layers, num_layers)) * -np.inf
+            "train": np.ones((max_depth, num_layers, num_layers)) * -np.inf,
+            "dev":   np.ones((max_depth, num_layers, num_layers)) * -np.inf,
+            "test":  np.ones((max_depth, num_layers, num_layers)) * -np.inf
         }
         self.compute_metrics = compute_metrics
         self.target_metrics = target_metrics
