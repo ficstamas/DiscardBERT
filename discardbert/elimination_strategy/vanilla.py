@@ -23,6 +23,11 @@ class ExactLayerEliminationStrategy(LayerEliminationStrategy):
     def get_extra_params(self):
         return ["exact_layers"]
 
+    def path_information(self, **kwargs) -> str:
+        exact_layers = kwargs.get("exact_layers", ())
+        exact_layers = '-'.join(exact_layers)
+        return f"exact-elimination_exact-layers_{exact_layers}"
+
 
 class RangeBasedLayerEliminationStrategy(ExactLayerEliminationStrategy):
     def discard(self, layers: OrderedDict, *args, **kwargs) -> OrderedDict:
@@ -42,3 +47,7 @@ class RangeBasedLayerEliminationStrategy(ExactLayerEliminationStrategy):
 
     def get_extra_params(self):
         return ["range"]
+
+    def path_information(self, **kwargs) -> str:
+        rang = kwargs.get("range", None)
+        return f"range-elimination_range_{'-'.join(rang)}"

@@ -105,3 +105,6 @@ class Simple(Training):
 
     def save(self, path: str):
         pass
+
+    def path_information(self) -> str:
+        return f"{self.elimination.path_information()}/None"

@@ -1,3 +1,6 @@
+import datetime
+import os
+
 from .elimination_strategy import STR2ELIMINATION, EliminationType
 from .training import STR2TRAINING, TrainingType
 from .tokenizer import STR2TOKENIZER, DatasetType, SubsetType
@@ -19,6 +22,11 @@ class Loop:
             tokenizer_params = {}
         if optimizer_params is None:
             optimizer_params = {}
+
+        self.model_type = model_type
+        self.dataset_name = dataset_name
+        self.subset_name = subset_name
+        self.training_method = training_method
 
         self.model = STR2MODEL_TYPE[model_type].from_pretrained(model_name)
         self.padding_fn = STR2PADDING[model_type]
@@ -48,6 +56,11 @@ class Loop:
 
         self.training.train(self.optimizer, scheduler, self.tokenized_dataset, self.padding_fn,
                             batch_size, num_epoch, logging_interval, use_wandb, **kwargs)
+        path = f"experiments/{str(int(datetime.datetime.now().timestamp()))}/" \
+               f"{self.model.config.name_or_path.replace('/', '_')}/{self.model_type}/" \
+               f"{self.dataset_name}/{self.subset_name}/{self.training_method}/{self.training.path_information()}"
+        os.makedirs(path, exist_ok=True)
+        self.training.save(path)
 
     def eval(self, prefix="eval", use_wandb=False):
         self.training.eval(self.tokenized_dataset, self.metrics.compute_metrics, prefix=prefix, use_wandb=use_wandb)

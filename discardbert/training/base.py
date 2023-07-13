@@ -28,3 +28,7 @@ class Training(abc.ABC):
     @abc.abstractmethod
     def save(self, path: str):
         pass
+
+    @abc.abstractmethod
+    def path_information(self) -> str:
+        pass

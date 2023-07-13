@@ -109,3 +109,10 @@ class Recursive(Simple):
 
         with open(os.path.join(path, "history.json"), mode="w") as f:
             json.dump(self.history, f)
+
+    def path_information(self) -> str:
+        repr_ = []
+        for key, value in self.exit_params:
+            repr_.append(f"{key}-{value}")
+        repr_.append(f"dilation_step-{self.dilation_step}")
+        return f"{self.elimination.path_information()}/{'_'.join(repr_)}"
