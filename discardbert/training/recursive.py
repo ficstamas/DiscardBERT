@@ -70,7 +70,7 @@ class Recursive(Simple):
                     break
 
                 metric_coordinates = np.where(depth_metric == metric)
-                metric_coordinates = (metric_coordinates[0].item(), metric_coordinates[1].item())
+                metric_coordinates = (metric_coordinates[0][0], metric_coordinates[1][0])
             else:
                 raise NotImplementedError()
 
