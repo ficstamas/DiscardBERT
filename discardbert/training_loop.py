@@ -1,7 +1,7 @@
 from .elimination_strategy import STR2ELIMINATION, EliminationType
 from .training import STR2TRAINING, TrainingType
 from .tokenizer import STR2TOKENIZER, DatasetType, SubsetType
-from typing import Type
+from typing import Type, Dict
 from transformers import get_scheduler
 from torch.optim import Optimizer
 from datasets import load_dataset
@@ -13,7 +13,7 @@ from .metrics import STR2METRICS
 class Loop:
     def __init__(self, model_name: str, model_type: ModelType, tokenizer_name: str, tokenizer_params: dict,
                  dataset_name: DatasetType, subset_name: SubsetType,
-                 training_method: TrainingType, elimination: EliminationType, elimination_params: dict,
+                 training_method: TrainingType, trainer_params: Dict, elimination: EliminationType, elimination_params: dict,
                  pre_evaluation: bool, optimizer: Type[Optimizer] = None, optimizer_params: dict = None):
         if tokenizer_params is None:
             tokenizer_params = {}
@@ -28,8 +28,10 @@ class Loop:
         self.dataset = load_dataset(dataset_name, subset_name)
         self.tokenized_dataset = self.dataset.map(self.tokenizer.tokenize, batched=True)
         self.metrics = STR2METRICS[dataset_name][subset_name](dataset=dataset_name, subset=subset_name)
+
+        trainer_params["compute_metrics"] = self.metrics.compute_metrics
         self.training = STR2TRAINING[training_method](
-            self.model, self.tokenizer.tokenizer, elimination, elimination_params
+            self.model, self.tokenizer.tokenizer, elimination, elimination_params, **trainer_params
         )
 
     def train(self, lr_scheduler: str, lr_scheduler_params: dict, batch_size: int, num_epoch: int,
@@ -44,7 +46,7 @@ class Loop:
         if self.pre_evaluation:
             self.eval(prefix="pre-eval", use_wandb=use_wandb)
 
-        self.training.train(self.optimizer, scheduler, self.tokenized_dataset["train"], self.padding_fn,
+        self.training.train(self.optimizer, scheduler, self.tokenized_dataset, self.padding_fn,
                             batch_size, num_epoch, logging_interval, use_wandb, **kwargs)
 
     def eval(self, prefix="eval", use_wandb=False):

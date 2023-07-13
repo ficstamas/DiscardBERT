@@ -12,7 +12,7 @@ from discardbert.utils.layers import assign_new_layers, retrieve_layers
 
 
 class Simple(Training):
-    def train(self, optimizer: Optimizer, lr_scheduler: LRScheduler, dataset: Dataset,
+    def train(self, optimizer: Optimizer, lr_scheduler: LRScheduler, dataset: DatasetDict,
               padding_fn: Optional[Callable], batch_size: int, num_epoch: int, logging_interval: int,
               use_wandb: bool, **kwargs):
         """
@@ -30,6 +30,7 @@ class Simple(Training):
         self.apply_elimination()
         model = self.model
         model.train()
+        dataset = dataset["train"]
         dataset.set_format("torch")
 
         steps = len(dataset) // batch_size
@@ -101,3 +102,6 @@ class Simple(Training):
         layers = self.elimination.discard(layers, **params)
         assign_new_layers(self.model, layers)
         self.model.config.num_hidden_layers = len(layers)
+
+    def save(self, path: str):
+        pass

@@ -55,6 +55,11 @@ args_.add_argument("--wandb_entity", type=str, default="szegedai-semantics")
 subparser_training = args_.add_subparsers(help="Training procedure", dest="training_command")
 simple = subparser_training.add_parser("simple", help="Simple/Normal training procedure")
 recursive = subparser_training.add_parser("recursive", help="Recursive training procedure")
+recursive.add_argument("--exit_condition", default="max_depth", choices=["depth", "tolerance"], help="Condition of stopping")
+recursive.add_argument("--selection_criteria", default="best", choices=["best"], help="How to select the next sub-model")
+recursive.add_argument("--max_depth", default=-1, type=int, help="Exit after reaching maximum depth")
+recursive.add_argument("--max_tolerance", default=0.95, type=float, help="Exit after tolerance reached")
+recursive.add_argument("--dilation_step", default=1, type=int, help="How many blocks of layers to jump")
 
 args, _ = args_.parse_known_args()
 
@@ -89,6 +94,17 @@ if args.use_wandb:
     import wandb
     wandb.init(project=args.wandb_project, entity=args.wandb_entity)
 
+trainer_params = {
+    "exit_params": {
+        "exit_condition": args.exit_condition,
+        "max_depth": args.max_depth,
+        "max_tolerance": args.max_tolerance,
+        "selection_criteria": args.selection_criteria
+    },
+    "target_metrics": "f1",
+    "dilation_step": args.dilation_step
+}
+
 loop = Loop(
     model_name=args.model_name,
     model_type=args.model_type,
@@ -97,6 +113,7 @@ loop = Loop(
     dataset_name=args.dataset_name,
     subset_name=args.subset_name,
     training_method=args.training_command,
+    trainer_params=trainer_params,
     elimination=args.elimination,
     elimination_params=elimination_params,
     pre_evaluation=args.pre_evaluation,

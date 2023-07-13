@@ -9,7 +9,7 @@ from discardbert.elimination_strategy import EliminationType, STR2ELIMINATION
 
 class Training(abc.ABC):
     def __init__(self, model: PreTrainedModel, tokenizer: PreTrainedTokenizer,
-                 elimination_type: EliminationType, elimination_params: Dict):
+                 elimination_type: EliminationType, elimination_params: Dict, **kwargs):
         self.elimination = STR2ELIMINATION[elimination_type]()
         self.elimination_params = elimination_params
         self.model = model
@@ -23,4 +23,8 @@ class Training(abc.ABC):
 
     @abc.abstractmethod
     def eval(self, dataset: DatasetDict, compute_metrics: Callable, prefix: str, **kwargs):
+        pass
+
+    @abc.abstractmethod
+    def save(self, path: str):
         pass
