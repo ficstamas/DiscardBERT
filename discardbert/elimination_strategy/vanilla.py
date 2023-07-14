@@ -18,7 +18,7 @@ class ExactLayerEliminationStrategy(LayerEliminationStrategy):
         new_index = 0
         new_dict = OrderedDict()
         for i, layer in layers.items():
-            if i in exact_layers:
+            if int(i) in exact_layers:
                 continue
             new_dict[str(new_index)] = copy.deepcopy(layer)
             new_index += 1
