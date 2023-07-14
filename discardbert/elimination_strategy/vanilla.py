@@ -6,7 +6,7 @@ from .base import LayerEliminationStrategy, OrderedDict
 class ExactLayerEliminationStrategy(LayerEliminationStrategy):
     def discard(self, layers: OrderedDict, *args, **kwargs) -> OrderedDict:
         """
-        Eliminates layers from the model based on the provided list.
+        Eliminates exact layers from the model based on the provided list.
         You can provide a list of layer ids in the `exact_layers` argument
         :param layers: OrderedDict containing the layers
         :param args:
@@ -14,10 +14,14 @@ class ExactLayerEliminationStrategy(LayerEliminationStrategy):
         :return:
         """
         exact_layers: list[int] = kwargs.get("exact_layers", ())
+
         new_index = 0
         new_dict = OrderedDict()
-        for layer in exact_layers:
+        for i, layer in layers.items():
+            if i in exact_layers:
+                continue
             new_dict[str(new_index)] = copy.deepcopy(layers[str(layer)])
+            new_index += 1
         return new_dict
 
     def get_extra_params(self):

@@ -11,13 +11,26 @@ from datasets import load_dataset
 from .model.task_type import STR2MODEL_TYPE, ModelType
 from .training.padding import STR2PADDING
 from .metrics import STR2METRICS
+import random
+import numpy as np
+import torch
+
+
+def set_seed(seed: int):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
 
 
 class Loop:
     def __init__(self, model_name: str, model_type: ModelType, tokenizer_name: str, tokenizer_params: dict,
                  dataset_name: DatasetType, subset_name: SubsetType,
                  training_method: TrainingType, trainer_params: Dict, elimination: EliminationType, elimination_params: dict,
-                 pre_evaluation: bool, optimizer: Type[Optimizer] = None, optimizer_params: dict = None):
+                 pre_evaluation: bool, optimizer: Type[Optimizer] = None, optimizer_params: dict = None, seed: int = 42):
+        set_seed(seed)
+
         if tokenizer_params is None:
             tokenizer_params = {}
         if optimizer_params is None:

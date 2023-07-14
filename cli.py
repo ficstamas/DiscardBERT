@@ -17,6 +17,7 @@ args_.add_argument("--pre_evaluation", action="store_true")
 args_.add_argument("--learning_rate", type=float, default=2e-5)
 args_.add_argument("--num_epoch", type=int, default=3)
 args_.add_argument("--batch_size", type=int, default=16)
+args_.add_argument("--seed", type=int, default=42)
 
 # optimizer parameters
 args_.add_argument("--optimizer", type=str, choices=get_args(OptimType), default="adamw")
@@ -119,7 +120,8 @@ loop = Loop(
     elimination_params=elimination_params,
     pre_evaluation=args.pre_evaluation,
     optimizer=optimizer,
-    optimizer_params=optimizer_params
+    optimizer_params=optimizer_params,
+    seed=args.seed
 )
 
 loop.train(

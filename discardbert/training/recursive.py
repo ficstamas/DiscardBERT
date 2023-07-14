@@ -70,9 +70,10 @@ class Recursive(Simple):
                     break
 
                 metric_coordinates = np.where(depth_metric == metric)
-                metric_coordinates = (metric_coordinates[0][0], metric_coordinates[1][0])
+                metric_coordinates = (int(metric_coordinates[0][0]), int(metric_coordinates[1][0]))
             else:
                 raise NotImplementedError()
+
             print(f"Coordinates for selection:", metric_coordinates)
             # logging
             for key in self.metrics:
