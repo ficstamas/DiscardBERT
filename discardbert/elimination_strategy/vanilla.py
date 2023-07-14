@@ -49,5 +49,5 @@ class RangeBasedLayerEliminationStrategy(ExactLayerEliminationStrategy):
         return ["range"]
 
     def path_information(self, **kwargs) -> str:
-        rang = kwargs.get("range", None)
+        rang = [str(x) for x in kwargs.get("range", [None, ])]
         return f"range-elimination_range_{'-'.join(rang)}"
