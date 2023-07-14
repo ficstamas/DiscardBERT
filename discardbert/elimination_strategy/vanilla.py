@@ -20,7 +20,7 @@ class ExactLayerEliminationStrategy(LayerEliminationStrategy):
         for i, layer in layers.items():
             if i in exact_layers:
                 continue
-            new_dict[str(new_index)] = copy.deepcopy(layers[str(layer)])
+            new_dict[str(new_index)] = copy.deepcopy(layer)
             new_index += 1
         return new_dict
 
