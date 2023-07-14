@@ -73,7 +73,7 @@ class Recursive(Simple):
                 metric_coordinates = (metric_coordinates[0][0], metric_coordinates[1][0])
             else:
                 raise NotImplementedError()
-
+            print(f"Coordinates for selection:", metric_coordinates)
             # logging
             for key in self.metrics:
                 self.history[key]["score"].append(
@@ -87,11 +87,13 @@ class Recursive(Simple):
                         for key in self.metrics
                     })
 
+            print(f"Num layers before: ", model.config.num_hidden_layers)
             # create new base model
             sub = Simple(copy.deepcopy(model), self.tokenizer, "range", {"range": metric_coordinates})
             sub.apply_elimination()
             model = sub.model
             del sub
+            print(f"Num layers after: ", model.config.num_hidden_layers)
 
             depth += 1
 
@@ -112,7 +114,7 @@ class Recursive(Simple):
 
     def path_information(self) -> str:
         repr_ = []
-        for key, value in self.exit_params:
+        for key, value in self.exit_params.items():
             repr_.append(f"{key}-{value}")
         repr_.append(f"dilation_step-{self.dilation_step}")
         return f"{self.elimination.path_information()}/{'_'.join(repr_)}"
