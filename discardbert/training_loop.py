@@ -73,7 +73,7 @@ class Loop:
                f"{self.model.config.name_or_path.replace('/', '_')}/{self.model_type}/" \
                f"{self.dataset_name}/{self.subset_name}/{self.training_method}/{self.training.path_information()}"
         os.makedirs(path, exist_ok=True)
-        self.training.save(path)
+        self.training.save(path, use_wandb)
 
     def eval(self, prefix="eval", use_wandb=False):
         self.training.eval(self.tokenized_dataset, self.metrics.compute_metrics, prefix=prefix, use_wandb=use_wandb)
