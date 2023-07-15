@@ -133,6 +133,7 @@ class Recursive(Simple):
                             data["split"].append(split)
                             data["depth"].append(depth)
                             data["from"].append(from_)
+                            data["to"].append(to_)
                             data["score"].append(arr[depth, from_, to_])
             df = pd.DataFrame(data=data)
             wandb.log({"metrics": wandb.Table(dataframe=df)})
