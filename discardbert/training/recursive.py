@@ -140,11 +140,12 @@ class Recursive(Simple):
                 for depth in range(arr.shape[0]):
                     for from_ in range(arr.shape[1]):
                         for to_ in range(arr.shape[2]):
-                            data["split"].append(split)
-                            data["depth"].append(depth)
-                            data["from"].append(from_)
-                            data["to"].append(to_)
-                            data["score"].append(arr[depth, from_, to_])
+                            if not np.isinf(arr[depth, from_, to_]):
+                                data["split"].append(split)
+                                data["depth"].append(depth)
+                                data["from"].append(from_)
+                                data["to"].append(to_)
+                                data["score"].append(arr[depth, from_, to_])
             df = pd.DataFrame(data=data)
             wandb.log({"metrics": wandb.Table(dataframe=df)})
 
