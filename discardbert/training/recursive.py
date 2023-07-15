@@ -47,6 +47,11 @@ class Recursive(Simple):
 
         model = copy.deepcopy(self.model)
         depth = 1
+        if use_wandb:
+            import wandb
+            wandb.log({
+                "num_layers": model.config.num_hidden_layers
+            })
         # iterate depth
         while True:
             # iterate possible values
@@ -96,6 +101,11 @@ class Recursive(Simple):
             model = sub.model
             del sub
             print(f"Num layers after: ", model.config.num_hidden_layers)
+            if use_wandb:
+                import wandb
+                wandb.log({
+                    "num_layers": model.config.num_hidden_layers
+                })
 
             depth += 1
 
