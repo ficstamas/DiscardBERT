@@ -26,7 +26,7 @@ class Training(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def save(self, path: str):
+    def save(self, path: str, use_wandb: bool = False):
         pass
 
     @abc.abstractmethod

@@ -10,6 +10,7 @@ from torch.optim.lr_scheduler import LRScheduler
 from .base import PreTrainedModel, PreTrainedTokenizer, EliminationType, Dict
 from .simple import Simple
 import numpy as np
+import pandas as pd
 
 
 class Recursive(Simple):
@@ -106,12 +107,35 @@ class Recursive(Simple):
             if depth == self.exit_params["max_depth"]:
                 break
 
-    def save(self, path: str):
+    def save(self, path: str, use_wandb: bool = False):
         for key, val in self.metrics.items():
             np.save(os.path.join(path, f"metric_{key}.npy"), val)
 
         with open(os.path.join(path, "history.json"), mode="w") as f:
             json.dump(self.history, f)
+
+        if use_wandb:
+            data = {
+                k: v["score"] for k, v in self.history.items()
+            }
+            data["range"] = self.history["train"]["range"]
+            df = pd.DataFrame(data=data)
+
+            import wandb
+            wandb.log({"progress_table": wandb.Table(dataframe=df)})
+
+            data = {"split": [], "depth": [], "from": [], "to": [], "score": []}
+            for split in self.metrics:
+                arr = self.metrics[split]
+                for depth in range(arr.shape[0]):
+                    for from_ in range(arr.shape[1]):
+                        for to_ in range(arr.shape[2]):
+                            data["split"].append(split)
+                            data["depth"].append(depth)
+                            data["from"].append(from_)
+                            data["score"].append(arr[depth, from_, to_])
+            df = pd.DataFrame(data=data)
+            wandb.log({"metrics": wandb.Table(dataframe=df)})
 
     def path_information(self) -> str:
         repr_ = []

@@ -103,7 +103,7 @@ class Simple(Training):
         assign_new_layers(self.model, layers)
         self.model.config.num_hidden_layers = len(layers)
 
-    def save(self, path: str):
+    def save(self, path: str, use_wandb: bool = False):
         pass
 
     def path_information(self) -> str:
