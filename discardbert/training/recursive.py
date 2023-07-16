@@ -3,6 +3,7 @@ import json
 import os.path
 from typing import Optional, Callable
 
+import torch
 from datasets import Dataset, DatasetDict
 from torch.optim import Optimizer
 from torch.optim.lr_scheduler import LRScheduler
@@ -118,6 +119,7 @@ class Recursive(Simple):
             # if depth reached
             if depth == self.exit_params["max_depth"]:
                 break
+        self.model = model
 
     def save(self, path: str, use_wandb: bool = False):
         for key, val in self.metrics.items():
@@ -125,6 +127,8 @@ class Recursive(Simple):
 
         with open(os.path.join(path, "history.json"), mode="w") as f:
             json.dump(self.history, f)
+
+        torch.save(self.model.state_dict(), os.path.join(path, "model.pt"))
 
         if use_wandb:
             data = {
