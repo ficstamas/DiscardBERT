@@ -44,6 +44,9 @@ class Recursive(Simple):
         baseline = self.eval(dataset=dataset, compute_metrics=self.compute_metrics, prefix=prefix)
         for key in baseline:
             self.metrics[key][0, 0, 0] = baseline[key][f"{prefix}_{key}_{self.target_metrics}"]
+            if use_wandb:
+                import wandb
+                wandb.log({f"progress_{key}": self.metrics[key][0, 0, 0].item()})
 
         model = copy.deepcopy(self.model)
         depth = 1
