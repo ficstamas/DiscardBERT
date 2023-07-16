@@ -1,0 +1,5 @@
+python cli.py --model_name "bert-base-uncased" --subset_name "mrpc" --use_wandb recursive --target_metrics "f1"
+python cli.py --model_name "bert-base-uncased" --subset_name "cola" --use_wandb recursive --target_metrics "matthews_correlation"
+python cli.py --model_name "bert-base-uncased" --subset_name "rte" --use_wandb recursive --target_metrics "accuracy"
+python cli.py --model_name "bert-base-uncased" --subset_name "sst2" --use_wandb recursive --target_metrics "accuracy"
+python cli.py --model_name "bert-base-uncased" --subset_name "qnli" --use_wandb recursive --target_metrics "accuracy"
