@@ -94,7 +94,6 @@ class Recursive(Simple):
                     import wandb
                     wandb.log({
                         f"progress_{key}": self.metrics[key][depth, metric_coordinates[0], metric_coordinates[1]].item()
-                        for key in self.metrics
                     })
 
             print(f"Num layers before: ", model.config.num_hidden_layers)
