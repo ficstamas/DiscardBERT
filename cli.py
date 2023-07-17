@@ -94,7 +94,7 @@ lr_scheduler_params = {
 
 if args.use_wandb:
     import wandb
-    wandb.init(project=args.wandb_project, entity=args.wandb_entity)
+    wandb.init(project=args.wandb_project, entity=args.wandb_entity, config=args)
 
 trainer_params = {
     "exit_params": {
