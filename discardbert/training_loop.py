@@ -1,13 +1,13 @@
 import datetime
 import os
 
-from .elimination_strategy import STR2ELIMINATION, EliminationType
+from .elimination_strategy import EliminationType
 from .training import STR2TRAINING, TrainingType
 from .tokenizer import STR2TOKENIZER, DatasetType, SubsetType
 from typing import Type, Dict
 from transformers import get_scheduler
 from torch.optim import Optimizer
-from datasets import load_dataset
+from .dataset import return_splits
 from .model.task_type import STR2MODEL_TYPE, ModelType
 from .training.padding import STR2PADDING
 from .metrics import STR2METRICS
@@ -46,7 +46,7 @@ class Loop:
         self.pre_evaluation = pre_evaluation
         self.optimizer = optimizer(self.model.parameters(), **optimizer_params)
         self.tokenizer = STR2TOKENIZER[dataset_name][subset_name](tokenizer_name, **tokenizer_params)
-        self.dataset = load_dataset(dataset_name, subset_name)
+        self.dataset = return_splits(dataset_name, subset_name)
         self.tokenized_dataset = self.dataset.map(self.tokenizer.tokenize, batched=True)
         self.metrics = STR2METRICS[dataset_name][subset_name](dataset=dataset_name, subset=subset_name)
 
