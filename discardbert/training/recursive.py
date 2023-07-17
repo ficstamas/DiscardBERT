@@ -64,7 +64,7 @@ class Recursive(Simple):
                 for j in range(i+self.dilation_step, num_layers, self.dilation_step):
                     # training a sub model
                     trainer = Simple(copy.deepcopy(model), self.tokenizer, "range", {"range": (i, j)})
-                    # TODO do not copy optimizer
+                    # TODO do not copy optimizer if changed, also change on line ~105
                     trainer.train(copy.deepcopy(optimizer), copy.deepcopy(lr_scheduler), dataset, padding_fn,
                                   batch_size, num_epoch, logging_interval, use_wandb, **kwargs)
                     prefix = f"eval_{depth}_{i}_{j}"
@@ -101,7 +101,8 @@ class Recursive(Simple):
             print(f"Num layers before: ", model.config.num_hidden_layers)
             # create new base model
             sub = Simple(copy.deepcopy(model), self.tokenizer, "range", {"range": metric_coordinates})
-            sub.apply_elimination()
+            sub.train(copy.deepcopy(optimizer), copy.deepcopy(lr_scheduler), dataset, padding_fn,
+                      batch_size, num_epoch, logging_interval, use_wandb, **kwargs)
             model = sub.model
             del sub
             print(f"Num layers after: ", model.config.num_hidden_layers)
