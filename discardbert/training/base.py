@@ -1,6 +1,6 @@
 import abc
 from transformers import PreTrainedModel, PreTrainedTokenizer
-from datasets import Dataset, DatasetDict
+from datasets import DatasetDict
 from torch.optim import Optimizer
 from torch.optim.lr_scheduler import LRScheduler
 from typing import Callable, Optional, Dict
@@ -16,7 +16,7 @@ class Training(abc.ABC):
         self.tokenizer = tokenizer
 
     @abc.abstractmethod
-    def train(self, optimizer: Optimizer, lr_scheduler: LRScheduler, dataset: Dataset,
+    def train(self, optimizer: Optimizer, lr_scheduler: LRScheduler, dataset: DatasetDict,
               padding_fn: Optional[Callable], batch_size: int, num_epoch: int, logging_interval: int,
               use_wandb: bool, **kwargs):
         pass

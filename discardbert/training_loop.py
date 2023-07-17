@@ -60,7 +60,7 @@ class Loop:
         lr_scheduler_params["optimizer"] = self.optimizer
 
         if lr_scheduler_params["num_training_steps"] is None:
-            lr_scheduler_params["num_training_steps"] = len(self.dataset["train"]) // batch_size
+            lr_scheduler_params["num_training_steps"] = len(self.dataset["train"]) // batch_size * num_epoch
 
         scheduler = get_scheduler(lr_scheduler, **lr_scheduler_params)
 

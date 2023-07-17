@@ -64,8 +64,9 @@ class Recursive(Simple):
                 for j in range(i+self.dilation_step, num_layers, self.dilation_step):
                     # training a sub model
                     trainer = Simple(copy.deepcopy(model), self.tokenizer, "range", {"range": (i, j)})
-                    trainer.train(optimizer, lr_scheduler, dataset, padding_fn, batch_size, num_epoch, logging_interval,
-                                  use_wandb, **kwargs)
+                    # TODO do not copy optimizer
+                    trainer.train(copy.deepcopy(optimizer), copy.deepcopy(lr_scheduler), dataset, padding_fn,
+                                  batch_size, num_epoch, logging_interval, use_wandb, **kwargs)
                     prefix = f"eval_{depth}_{i}_{j}"
                     metrics = trainer.eval(dataset, self.compute_metrics, prefix)
                     for key in baseline:
