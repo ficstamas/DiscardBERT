@@ -13,6 +13,7 @@ args_.add_argument("--model_type", type=str, choices=get_args(ModelType), defaul
 args_.add_argument("--dataset_name", type=str, choices=get_args(DatasetType), default="glue")
 args_.add_argument("--subset_name", type=str, choices=get_args(SubsetType), default="mrpc")
 args_.add_argument("--pre_evaluation", action="store_true")
+args_.add_argument("--initial_model", type=str, choices=["pdf", "pfdf"], default="pdf")
 
 args_.add_argument("--learning_rate", type=float, default=2e-5)
 args_.add_argument("--num_epoch", type=int, default=3)
@@ -130,7 +131,8 @@ loop.train(
     batch_size=batch_size,
     num_epoch=num_epoch,
     logging_interval=args.logging_interval,
-    use_wandb=args.use_wandb
+    use_wandb=args.use_wandb,
+    initial_model=args.initial_model
 )
 
 loop.eval(use_wandb=args.use_wandb)

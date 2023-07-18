@@ -27,7 +27,9 @@ class Simple(Training):
         :param use_wandb: Whether to use Wandb
         :return:
         """
-        self.apply_elimination()
+        elimination_applied = kwargs.get("elimination_applied", False)
+        if not elimination_applied:
+            self.apply_elimination()
         model = self.model
         model.train()
         dataset = dataset["train"]
@@ -64,6 +66,7 @@ class Simple(Training):
                 progress.update()
                 step_counter += 1
         progress.close()
+        self.model = model
         return mean_losses
 
     def eval(self, dataset: DatasetDict, compute_metrics: Callable, prefix: str = "eval", **kwargs):

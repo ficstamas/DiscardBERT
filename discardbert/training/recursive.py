@@ -40,6 +40,17 @@ class Recursive(Simple):
 
     def train(self, optimizer: Optimizer, lr_scheduler: LRScheduler, dataset: DatasetDict, padding_fn: Optional[Callable],
               batch_size: int, num_epoch: int, logging_interval: int, use_wandb: bool, **kwargs):
+        # run pdf or pfdf
+        initial_model = kwargs.get("initial_model", "pdf")
+
+        if initial_model == "pfdf":
+            trainer = Simple(copy.deepcopy(self.model), self.tokenizer, "range", {"range": (0, 0)})
+            trainer.train(optimizer.__class__(self.model.parameters(), **optimizer.defaults),
+                          copy.deepcopy(lr_scheduler), dataset, padding_fn,
+                          batch_size, num_epoch, logging_interval, use_wandb, **kwargs)
+            self.model = trainer.model
+            del trainer
+
         # get baseline score
         prefix = "pre-eval"
         baseline = self.eval(dataset=dataset, compute_metrics=self.compute_metrics, prefix=prefix)
@@ -64,9 +75,11 @@ class Recursive(Simple):
                 for j in range(i+self.dilation_step, num_layers, self.dilation_step):
                     # training a sub model
                     trainer = Simple(copy.deepcopy(model), self.tokenizer, "range", {"range": (i, j)})
+                    trainer.apply_elimination()
                     # TODO do not copy optimizer if changed, also change on line ~105
-                    trainer.train(copy.deepcopy(optimizer), copy.deepcopy(lr_scheduler), dataset, padding_fn,
-                                  batch_size, num_epoch, logging_interval, use_wandb, **kwargs)
+                    trainer.train(optimizer.__class__(trainer.model.parameters(), **optimizer.defaults),
+                                  copy.deepcopy(lr_scheduler), dataset, padding_fn,
+                                  batch_size, num_epoch, logging_interval, use_wandb, elimination_applied=True, **kwargs)
                     prefix = f"eval_{depth}_{i}_{j}"
                     metrics = trainer.eval(dataset, self.compute_metrics, prefix)
                     for key in baseline:
@@ -101,8 +114,10 @@ class Recursive(Simple):
             print(f"Num layers before: ", model.config.num_hidden_layers)
             # create new base model
             sub = Simple(copy.deepcopy(model), self.tokenizer, "range", {"range": metric_coordinates})
-            sub.train(copy.deepcopy(optimizer), copy.deepcopy(lr_scheduler), dataset, padding_fn,
-                      batch_size, num_epoch, logging_interval, use_wandb, **kwargs)
+            sub.apply_elimination()
+            sub.train(optimizer.__class__(sub.model.parameters(), **optimizer.defaults), copy.deepcopy(lr_scheduler),
+                      dataset, padding_fn, batch_size, num_epoch, logging_interval, use_wandb, elimination_applied=True,
+                      **kwargs)
             model = sub.model
             del sub
             print(f"Num layers after: ", model.config.num_hidden_layers)
