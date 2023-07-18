@@ -19,6 +19,7 @@ args_.add_argument("--learning_rate", type=float, default=2e-5)
 args_.add_argument("--num_epoch", type=int, default=3)
 args_.add_argument("--batch_size", type=int, default=16)
 args_.add_argument("--seed", type=int, default=42)
+args_.add_argument("--device", type=str, choices=["cuda", "cpu"], default="cpu")
 
 # optimizer parameters
 args_.add_argument("--optimizer", type=str, choices=get_args(OptimType), default="adamw")
@@ -132,7 +133,8 @@ loop.train(
     num_epoch=num_epoch,
     logging_interval=args.logging_interval,
     use_wandb=args.use_wandb,
-    initial_model=args.initial_model
+    initial_model=args.initial_model,
+    device=args.device
 )
 
 loop.eval(use_wandb=args.use_wandb)

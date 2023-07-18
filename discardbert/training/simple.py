@@ -28,9 +28,11 @@ class Simple(Training):
         :return:
         """
         elimination_applied = kwargs.get("elimination_applied", False)
+        device = kwargs.get("device", "cpu")
+
         if not elimination_applied:
             self.apply_elimination()
-        model = self.model
+        model = self.model.to(device)
         model.train()
         dataset = dataset["train"]
         dataset.set_format("torch")
@@ -66,7 +68,7 @@ class Simple(Training):
                 progress.update()
                 step_counter += 1
         progress.close()
-        self.model = model
+        self.model = model.cpu()
         return mean_losses
 
     def eval(self, dataset: DatasetDict, compute_metrics: Callable, prefix: str = "eval", **kwargs):
