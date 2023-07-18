@@ -44,7 +44,7 @@ class Recursive(Simple):
         initial_model = kwargs.get("initial_model", "pdf")
 
         if initial_model == "pfdf":
-            trainer = Simple(copy.deepcopy(self.model), self.tokenizer, "range", {"range": (0, 0)})
+            trainer = Simple(self.model, self.tokenizer, "range", {"range": (0, 0)})
             trainer.train(optimizer.__class__(self.model.parameters(), **optimizer.defaults),
                           copy.deepcopy(lr_scheduler), dataset, padding_fn,
                           batch_size, num_epoch, logging_interval, use_wandb, **kwargs)
