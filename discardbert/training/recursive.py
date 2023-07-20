@@ -72,7 +72,7 @@ class Recursive(Simple):
             # iterate possible values
             num_layers = model.config.num_hidden_layers
             for i in range(0, num_layers, self.dilation_step):
-                for j in range(i+self.dilation_step, num_layers, self.dilation_step):
+                for j in range(i+self.dilation_step, num_layers+1, self.dilation_step):
                     # training a sub model
                     trainer = Simple(copy.deepcopy(model), self.tokenizer, "range", {"range": (i, j)})
                     trainer.apply_elimination()
