@@ -1,7 +1,8 @@
-python cli.py --initial_model "pfdf" --device "cuda" --model_name "bert-base-uncased" --dataset_name "wanli" --subset_name "wanli" --tokenizer_name "bert-base-uncased" --tokenizer_truncation "longest_first" --tokenizer_max_length 256 --use_wandb recursive --target_metrics "f1"
-
 python cli.py --initial_model "pfdf" --device "cuda" --model_name "bert-base-uncased" --subset_name "cola" --tokenizer_name "bert-base-uncased" --tokenizer_truncation "longest_first" --tokenizer_max_length 256 --use_wandb recursive --target_metrics "matthews_correlation"
 python cli.py --initial_model "pfdf" --device "cuda" --model_name "bert-base-uncased" --subset_name "mrpc" --tokenizer_name "bert-base-uncased" --tokenizer_truncation "longest_first" --tokenizer_max_length 256 --use_wandb recursive --target_metrics "f1"
 python cli.py --initial_model "pfdf" --device "cuda" --model_name "bert-base-uncased" --subset_name "rte"  --tokenizer_name "bert-base-uncased" --tokenizer_truncation "longest_first" --tokenizer_max_length 256 --use_wandb recursive --target_metrics "accuracy"
+
+python cli.py --initial_model "pfdf" --device "cuda" --model_name "bert-base-uncased" --dataset_name "wanli" --subset_name "wanli" --tokenizer_name "bert-base-uncased" --tokenizer_truncation "longest_first" --tokenizer_max_length 256 --use_wandb recursive --target_metrics "f1"
+
 python cli.py --initial_model "pfdf" --device "cuda" --model_name "bert-base-uncased" --subset_name "sst2" --tokenizer_name "bert-base-uncased" --tokenizer_truncation "longest_first" --tokenizer_max_length 256 --use_wandb recursive --target_metrics "accuracy"
 # python cli.py --model_name "bert-base-uncased" --subset_name "qnli" --tokenizer_name "bert-base-uncased" --tokenizer_truncation "longest_first" --tokenizer_max_length 256 --use_wandb recursive --target_metrics "accuracy"
