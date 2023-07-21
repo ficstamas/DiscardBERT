@@ -1,17 +1,32 @@
 import sys
 from argparse import ArgumentParser
 from discardbert.training_loop import Loop, ModelType, DatasetType, SubsetType, TrainingType, EliminationType
-from typing import get_args
+from typing import get_args, get_origin, Union, Literal, Iterable
 from discardbert.optimizer import STR2OPTIM, OptimType
+
+
+def flatten_type(type_args) -> Iterable[str]:
+    """
+    Get defined arguments in Union of Literals or in Literals
+    :param type_args:
+    :return:
+    """
+    flattened_type_args = ()
+    if get_origin(type_args) is Union:
+        for type_ in get_args(type_args):
+            flattened_type_args += get_args(type_)
+    else:
+        flattened_type_args += get_args(type_args)
+    return flattened_type_args
 
 
 args_ = ArgumentParser("DiscardBERT")
 
 # general parameters
 args_.add_argument("--model_name", type=str, default="prajjwal1/bert-medium")
-args_.add_argument("--model_type", type=str, choices=get_args(ModelType), default="sequence")
-args_.add_argument("--dataset_name", type=str, choices=get_args(DatasetType), default="glue")
-args_.add_argument("--subset_name", type=str, choices=get_args(SubsetType), default="mrpc")
+args_.add_argument("--model_type", type=str, choices=flatten_type(ModelType), default="sequence")
+args_.add_argument("--dataset_name", type=str, choices=flatten_type(DatasetType), default="glue")
+args_.add_argument("--subset_name", type=str, choices=flatten_type(SubsetType), default="mrpc")
 args_.add_argument("--pre_evaluation", action="store_true")
 args_.add_argument("--initial_model", type=str, choices=["pdf", "pfdf"], default="pdf")
 
@@ -22,7 +37,7 @@ args_.add_argument("--seed", type=int, default=42)
 args_.add_argument("--device", type=str, choices=["cuda", "cpu"], default="cpu")
 
 # optimizer parameters
-args_.add_argument("--optimizer", type=str, choices=get_args(OptimType), default="adamw")
+args_.add_argument("--optimizer", type=str, choices=flatten_type(OptimType), default="adamw")
 args_.add_argument("--optimizer_adamw_betas", action="extend", nargs=2, type=float, dest="elimination_range",
                    default=(0.9, 0.999))
 args_.add_argument("--optimizer_adamw_eps", type=float, default=1e-8)
@@ -39,7 +54,7 @@ args_.add_argument("--tokenizer_padding", type=str,
 args_.add_argument("--tokenizer_max_length", type=int)
 
 # elimination parameters
-args_.add_argument("--elimination", type=str, choices=get_args(EliminationType))
+args_.add_argument("--elimination", type=str, choices=flatten_type(EliminationType))
 args_.add_argument("--range", action="extend", nargs=2, type=int, dest="elimination_range")
 args_.add_argument("--exact_layers", action="extend", nargs="+", type=int, dest="elimination_exact_layers")
 

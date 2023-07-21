@@ -41,12 +41,16 @@ class Loop:
         self.subset_name = subset_name
         self.training_method = training_method
 
-        self.model = STR2MODEL_TYPE[model_type].from_pretrained(model_name)
+        self.dataset = return_splits(dataset_name, subset_name)
+        try:
+            num_labels = len(self.dataset['train'].features['label'].names)
+        except:
+            num_labels = 2
+        self.model = STR2MODEL_TYPE[model_type].from_pretrained(model_name, num_labels=num_labels)
         self.padding_fn = STR2PADDING[model_type]
         self.pre_evaluation = pre_evaluation
         self.optimizer = optimizer(self.model.parameters(), **optimizer_params)
         self.tokenizer = STR2TOKENIZER[dataset_name][subset_name](tokenizer_name, **tokenizer_params)
-        self.dataset = return_splits(dataset_name, subset_name)
         self.tokenized_dataset = self.dataset.map(self.tokenizer.tokenize, batched=True)
         self.metrics = STR2METRICS[dataset_name][subset_name](dataset=dataset_name, subset=subset_name)
 
