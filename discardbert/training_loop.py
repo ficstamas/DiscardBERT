@@ -43,7 +43,7 @@ class Loop:
 
         self.dataset = return_splits(dataset_name, subset_name)
         try:
-            num_labels = len(self.dataset['train'].features['label'].names)
+            num_labels = len(self.dataset)
         except:
             num_labels = 2
         self.model = STR2MODEL_TYPE[model_type].from_pretrained(model_name, num_labels=num_labels)
