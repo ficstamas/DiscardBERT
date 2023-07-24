@@ -1,3 +1,7 @@
+import copy
+import os
+import pickle
+
 from transformers import TrainingArguments, Trainer, IntervalStrategy, DataCollatorWithPadding
 from datasets import Dataset, DatasetDict
 import tqdm
@@ -34,7 +38,7 @@ class Simple(Training):
             self.apply_elimination()
         model = self.model.to(device)
         model.train()
-        dataset = dataset["train"]
+        dataset = copy.deepcopy(dataset["train"])
         dataset.set_format("torch")
 
         steps = len(dataset) // batch_size
@@ -92,9 +96,15 @@ class Simple(Training):
             dataset['train'], dataset['test'],
             tokenizer, compute_metrics=compute_metrics)
 
-        train = trainer.evaluate(dataset['train'], metric_key_prefix=f'{prefix}_train')
-        dev = trainer.evaluate(dataset['validation'], metric_key_prefix=f'{prefix}_dev')
-        test = trainer.evaluate(dataset['test'], metric_key_prefix=f'{prefix}_test')
+        try:
+            train = trainer.evaluate(dataset['train'], metric_key_prefix=f'{prefix}_train')
+            dev = trainer.evaluate(dataset['validation'], metric_key_prefix=f'{prefix}_dev')
+            test = trainer.evaluate(dataset['test'], metric_key_prefix=f'{prefix}_test')
+        except ValueError:
+            os.makedirs("~/dbert-error/")
+            with open("~/dbert-error/dump_dataset.pickle", mode="wb") as f:
+                pickle.dump(dataset, f)
+            exit(-1)
         return {
             "train": train,
             "dev": dev,
