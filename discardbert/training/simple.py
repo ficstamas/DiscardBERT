@@ -101,8 +101,8 @@ class Simple(Training):
             dev = trainer.evaluate(dataset['validation'], metric_key_prefix=f'{prefix}_dev')
             test = trainer.evaluate(dataset['test'], metric_key_prefix=f'{prefix}_test')
         except ValueError:
-            os.makedirs("~/dbert-error/")
-            with open("~/dbert-error/dump_dataset.pickle", mode="wb") as f:
+            os.makedirs("../dbert-error/")
+            with open("../dbert-error/dump_dataset.pickle", mode="wb") as f:
                 pickle.dump(dataset, f)
             exit(-1)
         return {

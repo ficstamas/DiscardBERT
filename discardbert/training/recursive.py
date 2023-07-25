@@ -47,7 +47,7 @@ class Recursive(Simple):
             trainer = Simple(self.model, self.tokenizer, "range", {"range": (0, 0)})
             trainer.train(optimizer.__class__(self.model.parameters(), **optimizer.defaults),
                           copy.deepcopy(lr_scheduler), dataset, padding_fn,
-                          batch_size, num_epoch, logging_interval, use_wandb, **kwargs)
+                          batch_size, num_epoch, logging_interval, use_wandb, elimination_applied=True, **kwargs)
             self.model = trainer.model
             del trainer
 
