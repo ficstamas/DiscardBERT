@@ -107,7 +107,7 @@ elimination_params = {
 perf_params = {
     k.removeprefix("peft_"): v for k, v in args.__dict__.items() if k.startswith("peft_")
 }
-perf_params["peft"] = args.perf
+perf_params["peft"] = args.peft
 
 optimizer = STR2OPTIM[args.optimizer]
 optimizer_params = {
