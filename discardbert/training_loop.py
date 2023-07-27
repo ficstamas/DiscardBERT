@@ -14,6 +14,13 @@ from .metrics import STR2METRICS
 import random
 import numpy as np
 import torch
+from peft import get_peft_model, LoraConfig, TaskType
+
+
+PERF2MODEL_TYPE = {
+    "sequence": TaskType.SEQ_CLS,
+    "token": TaskType.TOKEN_CLS
+}
 
 
 def set_seed(seed: int):
@@ -28,18 +35,23 @@ class Loop:
     def __init__(self, model_name: str, model_type: ModelType, tokenizer_name: str, tokenizer_params: dict,
                  dataset_name: DatasetType, subset_name: SubsetType,
                  training_method: TrainingType, trainer_params: Dict, elimination: EliminationType, elimination_params: dict,
-                 pre_evaluation: bool, optimizer: Type[Optimizer] = None, optimizer_params: dict = None, seed: int = 42):
+                 pre_evaluation: bool, optimizer: Type[Optimizer] = None, optimizer_params: dict = None,
+                 perf_params: dict = None,  seed: int = 42):
         set_seed(seed)
 
         if tokenizer_params is None:
             tokenizer_params = {}
         if optimizer_params is None:
             optimizer_params = {}
+        if perf_params is None:
+            perf_params = {}
+        perf_params["task_type"] = PERF2MODEL_TYPE[model_type]
 
         self.model_type = model_type
         self.dataset_name = dataset_name
         self.subset_name = subset_name
         self.training_method = training_method
+        use_perf = perf_params.pop("perf")
 
         self.dataset = return_splits(dataset_name, subset_name)
         try:
@@ -47,6 +59,9 @@ class Loop:
         except:
             num_labels = 2
         self.model = STR2MODEL_TYPE[model_type].from_pretrained(model_name, num_labels=num_labels)
+        if use_perf:
+            perf_config = LoraConfig(**perf_params)
+            self.model = get_peft_model(self.model, perf_config)
         self.padding_fn = STR2PADDING[model_type]
         self.pre_evaluation = pre_evaluation
         self.optimizer = optimizer(self.model.parameters(), **optimizer_params)

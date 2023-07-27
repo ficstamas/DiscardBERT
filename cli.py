@@ -29,6 +29,7 @@ args_.add_argument("--dataset_name", type=str, choices=flatten_type(DatasetType)
 args_.add_argument("--subset_name", type=str, choices=flatten_type(SubsetType), default="mrpc")
 args_.add_argument("--pre_evaluation", action="store_true")
 args_.add_argument("--initial_model", type=str, choices=["pdf", "pfdf"], default="pdf")
+args_.add_argument("--peft", action="store_true")
 
 args_.add_argument("--learning_rate", type=float, default=2e-5)
 args_.add_argument("--num_epoch", type=int, default=3)
@@ -69,6 +70,11 @@ args_.add_argument("--use_wandb", action="store_true")
 args_.add_argument("--wandb_project", type=str, default="huggingface")
 args_.add_argument("--wandb_entity", type=str, default="szegedai-semantics")
 
+# peft parameters
+args_.add_argument("--peft_r", type=int, default=8)
+args_.add_argument("--peft_lora_alpha", type=int, default=32)
+args_.add_argument("--peft_lora_dropout", type=float, default=0.1)
+
 # subprograms : training procedures
 subparser_training = args_.add_subparsers(help="Training procedure", dest="training_command")
 simple = subparser_training.add_parser("simple", help="Simple/Normal training procedure")
@@ -97,6 +103,11 @@ tokenizer_params = {
 elimination_params = {
     k.removeprefix("elimination_"): v for k, v in args.__dict__.items() if k.startswith("elimination_")
 }
+
+perf_params = {
+    k.removeprefix("perf_"): v for k, v in args.__dict__.items() if k.startswith("perf_")
+}
+perf_params["perf"] = args.perf
 
 optimizer = STR2OPTIM[args.optimizer]
 optimizer_params = {
