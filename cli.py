@@ -104,10 +104,10 @@ elimination_params = {
     k.removeprefix("elimination_"): v for k, v in args.__dict__.items() if k.startswith("elimination_")
 }
 
-perf_params = {
+peft_params = {
     k.removeprefix("peft_"): v for k, v in args.__dict__.items() if k.startswith("peft_")
 }
-perf_params["peft"] = args.peft
+peft_params["peft"] = args.peft
 
 optimizer = STR2OPTIM[args.optimizer]
 optimizer_params = {
@@ -149,6 +149,7 @@ loop = Loop(
     pre_evaluation=args.pre_evaluation,
     optimizer=optimizer,
     optimizer_params=optimizer_params,
+    peft_params=peft_params,
     seed=args.seed
 )
 

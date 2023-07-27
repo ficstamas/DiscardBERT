@@ -36,16 +36,17 @@ class Loop:
                  dataset_name: DatasetType, subset_name: SubsetType,
                  training_method: TrainingType, trainer_params: Dict, elimination: EliminationType, elimination_params: dict,
                  pre_evaluation: bool, optimizer: Type[Optimizer] = None, optimizer_params: dict = None,
-                 perf_params: dict = None,  seed: int = 42):
+                 peft_params: dict = None,  seed: int = 42):
         set_seed(seed)
 
         if tokenizer_params is None:
             tokenizer_params = {}
         if optimizer_params is None:
             optimizer_params = {}
-        if perf_params is None:
+        if peft_params is None:
             perf_params = {}
-        perf_params["task_type"] = PERF2MODEL_TYPE[model_type]
+        peft_params["task_type"] = PERF2MODEL_TYPE[model_type]
+        peft_params["inference_mode"] = False
 
         self.model_type = model_type
         self.dataset_name = dataset_name
