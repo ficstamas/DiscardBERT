@@ -51,7 +51,7 @@ class Loop:
         self.dataset_name = dataset_name
         self.subset_name = subset_name
         self.training_method = training_method
-        use_perf = perf_params.pop("perf")
+        use_peft = perf_params.pop("peft")
 
         self.dataset = return_splits(dataset_name, subset_name)
         try:
@@ -59,9 +59,9 @@ class Loop:
         except:
             num_labels = 2
         self.model = STR2MODEL_TYPE[model_type].from_pretrained(model_name, num_labels=num_labels)
-        if use_perf:
-            perf_config = LoraConfig(**perf_params)
-            self.model = get_peft_model(self.model, perf_config)
+        if use_peft:
+            peft_config = LoraConfig(**perf_params)
+            self.model = get_peft_model(self.model, peft_config)
         self.padding_fn = STR2PADDING[model_type]
         self.pre_evaluation = pre_evaluation
         self.optimizer = optimizer(self.model.parameters(), **optimizer_params)
