@@ -12,6 +12,7 @@ from .base import PreTrainedModel, PreTrainedTokenizer, EliminationType, Dict
 from .simple import Simple
 import numpy as np
 import pandas as pd
+from .generators.steps import STEP_GENERATOR
 
 
 class Recursive(Simple):
@@ -21,6 +22,9 @@ class Recursive(Simple):
         super().__init__(model, tokenizer, "range", elimination_params)
         self.exit_params = exit_params
         self.dilation_step = kwargs.get("dilation_step", 1)
+        self.exploration_function = STEP_GENERATOR[
+            kwargs.get("recursive_steps", "full_triangle")
+        ]
         num_layers = model.config.num_hidden_layers
         max_depth = self.exit_params["max_depth"] \
             if self.exit_params["max_depth"] != -1 \
@@ -71,20 +75,18 @@ class Recursive(Simple):
         while True:
             # iterate possible values
             num_layers = model.config.num_hidden_layers
-            for i in range(0, num_layers, self.dilation_step):
-                for j in range(i+self.dilation_step, num_layers+1, self.dilation_step):
-                    # training a sub model
-                    trainer = Simple(copy.deepcopy(model), self.tokenizer, "range", {"range": (i, j)})
-                    trainer.apply_elimination()
-                    # TODO do not copy optimizer if changed, also change on line ~105
-                    trainer.train(optimizer.__class__(trainer.model.parameters(), **optimizer.defaults),
-                                  copy.deepcopy(lr_scheduler), dataset, padding_fn,
-                                  batch_size, num_epoch, logging_interval, use_wandb, elimination_applied=True, **kwargs)
-                    prefix = f"eval_{depth}_{i}_{j}"
-                    metrics = trainer.eval(dataset, self.compute_metrics, prefix)
-                    for key in baseline:
-                        self.metrics[key][depth, i, j] = metrics[key][f"{prefix}_{key}_{self.target_metrics}"]
-                    del trainer
+            for i, j in self.exploration_function(0, num_layers, self.dilation_step):
+                # training a sub model
+                trainer = Simple(copy.deepcopy(model), self.tokenizer, "range", {"range": (i, j)})
+                trainer.apply_elimination()
+                trainer.train(optimizer.__class__(trainer.model.parameters(), **optimizer.defaults),
+                              copy.deepcopy(lr_scheduler), dataset, padding_fn,
+                              batch_size, num_epoch, logging_interval, use_wandb, elimination_applied=True, **kwargs)
+                prefix = f"eval_{depth}_{i}_{j}"
+                metrics = trainer.eval(dataset, self.compute_metrics, prefix)
+                for key in baseline:
+                    self.metrics[key][depth, i, j] = metrics[key][f"{prefix}_{key}_{self.target_metrics}"]
+                del trainer
 
             # selecting best elimination
             depth_metric = self.metrics["dev"][depth, :num_layers, :num_layers]

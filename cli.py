@@ -84,6 +84,8 @@ recursive.add_argument("--selection_criteria", default="best", choices=["best"],
 recursive.add_argument("--max_depth", default=-1, type=int, help="Exit after reaching maximum depth")
 recursive.add_argument("--max_tolerance", default=0.95, type=float, help="Exit after tolerance reached")
 recursive.add_argument("--dilation_step", default=1, type=int, help="How many blocks of layers to jump")
+recursive.add_argument("--dilation_step", default="full_triangle", type=str, choices=["full_triangle", "off_diagonal"],
+    help="Other ways to explore the triangular matrix for a recursive step")
 recursive.add_argument("--target_metrics", default="f1", help="Metric to use for validation")
 
 args, _ = args_.parse_known_args()
@@ -132,7 +134,8 @@ trainer_params = {
         "selection_criteria": args.selection_criteria
     },
     "target_metrics": args.target_metrics,
-    "dilation_step": args.dilation_step
+    "dilation_step": args.dilation_step,
+    "recursive_steps": args.recursive_steps
 }
 
 loop = Loop(
