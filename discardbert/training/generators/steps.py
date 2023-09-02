@@ -3,7 +3,7 @@ from typing import Generator, Tuple
 
 def generate_upper_triangle(
     lower_bound: int, upper_bound: int, step_size: int = 1
-) -> Generator(Tuple[int, int]):
+) -> Generator[Tuple[int, int], None, None]:
     # generator
     for i in range(lower_bound, upper_bound, step_size):
         for j in range(i+step_size, upper_bound+1, step_size):
@@ -12,7 +12,7 @@ def generate_upper_triangle(
 
 def generate_off_diagonal(
     lower_bound: int, upper_bound: int, step_size: int = 1
-) -> Generator(Tuple[int, int]):
+) -> Generator[Tuple[int, int], None, None]:
     # generator
     for i in range(lower_bound, upper_bound, step_size):
         yield i, i+step_size
