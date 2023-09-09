@@ -4,7 +4,7 @@ import os.path
 from typing import Optional, Callable
 
 import torch
-from datasets import Dataset, DatasetDict
+from datasets import DatasetDict
 from torch.optim import Optimizer
 from torch.optim.lr_scheduler import LRScheduler
 
@@ -110,7 +110,8 @@ class Recursive(Simple):
                 if use_wandb:
                     import wandb
                     wandb.log({
-                        f"progress_{key}": self.metrics[key][depth, metric_coordinates[0], metric_coordinates[1]].item()
+                        f"progress_{key}": self.metrics[key][depth, metric_coordinates[0], metric_coordinates[1]].item(),
+                        "num_layers": num_layers - (metric_coordinates[1] - metric_coordinates[0])
                     })
 
             print(f"Num layers before: ", model.config.num_hidden_layers)
