@@ -68,7 +68,9 @@ class Loop:
         self.optimizer = optimizer(self.model.parameters(), **optimizer_params)
         self.tokenizer = STR2TOKENIZER[dataset_name][subset_name](tokenizer_name, **tokenizer_params)
         self.tokenized_dataset = self.dataset.map(self.tokenizer.tokenize, batched=True)
-        self.metrics = STR2METRICS[dataset_name][subset_name](dataset=dataset_name, subset=subset_name)
+        self.metrics = STR2METRICS[dataset_name][subset_name](
+            dataset=dataset_name, subset=subset_name, id2label=self.model.config.id2label
+        )
 
         trainer_params["compute_metrics"] = self.metrics.compute_metrics
         self.training = STR2TRAINING[training_method](
