@@ -19,8 +19,10 @@ def dynamic_padding_sequence_classification(batch: Dict[str, Tensor], device: st
 
     b = {}
     for f in features:
-        b[f] = torch.stack([torch.nn.functional.pad(t, (0, max_len - t.shape[-1]), value=0) for t in batch[f]]).to(
-            device)
+        try:
+            b[f] = torch.stack([torch.nn.functional.pad(t, (0, max_len - t.shape[-1]), value=0) for t in batch[f]]).to(device)
+        except KeyError:
+            continue
     b['labels'] = batch['labels'].to(device)
     return b
 
@@ -31,12 +33,15 @@ def dynamic_padding_token_classification(batch: Dict[str, Tensor], device: str) 
 
     b = {}
     for f in features:
-        if f != 'labels':
-            b[f] = torch.stack(
-                [torch.nn.functional.pad(t, (0, max_len - t.shape[-1]), value=0) for t in batch[f]]).to(device)
-        else:
-            b[f] = torch.stack(
-                [torch.nn.functional.pad(t, (0, max_len - t.shape[-1]), value=-100) for t in batch[f]]).to(device)
+        try:
+            if f != 'labels':
+                b[f] = torch.stack(
+                    [torch.nn.functional.pad(t, (0, max_len - t.shape[-1]), value=0) for t in batch[f]]).to(device)
+            else:
+                b[f] = torch.stack(
+                    [torch.nn.functional.pad(t, (0, max_len - t.shape[-1]), value=-100) for t in batch[f]]).to(device)
+        except KeyError:
+            continue
     return b
 
 
