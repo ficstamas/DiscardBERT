@@ -1,5 +1,5 @@
 seeds=(0 1 2 3 4)
-models=("bert-base-uncased" "roberta-base" "distilbert-base-uncased")
+models=("distilbert-base-uncased")
 
 for model in ${models[@]}
 do

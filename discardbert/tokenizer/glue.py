@@ -16,6 +16,9 @@ class GLUETokenizer(Tokenizer):
         sentence_1 = examples[keys[0]]
         sentence_2 = examples[keys[1]] if keys[1] is not None else None
 
+        if 'dataset' in self.kwargs:
+            del self.kwargs["dataset"]
+
         tokenized_inputs = self.tokenizer(
             sentence_1, sentence_2, **self.kwargs
         )
