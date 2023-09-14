@@ -2,7 +2,7 @@ import copy
 import os
 import pickle
 
-from transformers import TrainingArguments, Trainer, IntervalStrategy, DataCollatorWithPadding
+from transformers import TrainingArguments, Trainer, IntervalStrategy, DataCollatorWithPadding, DataCollatorForTokenClassification
 from datasets import Dataset, DatasetDict
 import tqdm
 from torch.optim import Optimizer
@@ -91,8 +91,13 @@ class Simple(Training):
                                           logging_strategy=IntervalStrategy.EPOCH, save_strategy=IntervalStrategy.NO,
                                           report_to=["wandb"] if kwargs.get("use_wandb", False) else ["none"])
 
+        if "Token" in model.__class__.__name__:
+            collator = DataCollatorForTokenClassification(tokenizer)
+        else:
+            collator = DataCollatorWithPadding(tokenizer)
+
         trainer = Trainer(
-            model, training_args, DataCollatorWithPadding(tokenizer),
+            model, training_args, collator,
             dataset['train'], dataset['test'],
             tokenizer, compute_metrics=compute_metrics)
 
@@ -101,7 +106,7 @@ class Simple(Training):
             dev = trainer.evaluate(dataset['validation'], metric_key_prefix=f'{prefix}_dev')
             test = trainer.evaluate(dataset['test'], metric_key_prefix=f'{prefix}_test')
         except ValueError:
-            os.makedirs("../dbert-error/")
+            os.makedirs("../dbert-error/", exist_ok=True)
             with open("../dbert-error/dump_dataset.pickle", mode="wb") as f:
                 pickle.dump(dataset, f)
             exit(-1)
