@@ -1,14 +1,16 @@
 from .base import Tokenizer
 from typing import Dict, Literal, Type
-
+from copy import deepcopy
+import torch
 
 CONLLType = Literal["ner", "pos"]
 
 
 class CONLLTokenizer(Tokenizer):
-    def __init__(self, tokenizer_name, keys, **kwargs):
+    def __init__(self, tokenizer_name, keys, dataset, **kwargs):
         super().__init__(tokenizer_name, **kwargs)
         self.keys = keys
+        self.dataset = dataset
 
     def tokenize(self, examples):
         tokenized_inputs = self.tokenizer(
@@ -24,8 +26,8 @@ class CONLLTokenizer(Tokenizer):
         labels = []
         task = self.keys
 
-        id2label = self.dataset['train'].features[f'{task}_tags'].feature.names
-        label2id = self.student.config.label2id
+        id2label = {i: v for i,v in enumerate(self.dataset['train'].features[f'{task}_tags'].feature.names)}
+        label2id = {v: k for k,v in id2label.items()}
         if task == "ner":
             if "B-PER" not in label2id:
                 label2id["B-PER"] = label2id["I-PER"]
@@ -62,21 +64,21 @@ class CONLLTokenizer(Tokenizer):
 
 
 class NERTokenizer(CONLLTokenizer):
-    def __init__(self, tokenizer_name, **kwargs):
+    def __init__(self, tokenizer_name, dataset, **kwargs):
         self.keys = "ner"
-        super().__init__(tokenizer_name, self.keys, **kwargs)
+        super().__init__(tokenizer_name, self.keys, dataset, **kwargs)
 
 
 class POSTokenizer(CONLLTokenizer):
-    def __init__(self, tokenizer_name, **kwargs):
+    def __init__(self, tokenizer_name, dataset, **kwargs):
         self.keys = "pos"
-        super().__init__(tokenizer_name, self.keys, **kwargs)
+        super().__init__(tokenizer_name, self.keys, dataset, **kwargs)
 
 
 class ChunkTokenizer(CONLLTokenizer):
-    def __init__(self, tokenizer_name, **kwargs):
+    def __init__(self, tokenizer_name, dataset, **kwargs):
         self.keys = "chunk"
-        super().__init__(tokenizer_name, self.keys, **kwargs)
+        super().__init__(tokenizer_name, self.keys, dataset, **kwargs)
 
 
 STR2CONLL_TASK: Dict[CONLLType, Type[CONLLTokenizer]] = {

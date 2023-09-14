@@ -53,7 +53,7 @@ class Simple(Training):
             for ix in range(0, len(dataloader), batch_size):
                 data = dataloader[ix:ix + batch_size]
                 batch = padding_fn(data, model.device) if padding_fn is not None else to_torch(data, model.device)
-
+                
                 student_output = model(**batch)
 
                 student_output.loss.backward()

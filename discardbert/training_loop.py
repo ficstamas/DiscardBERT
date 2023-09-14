@@ -54,18 +54,24 @@ class Loop:
         self.training_method = training_method
         use_peft = peft_params.pop("peft")
 
-        self.dataset = return_splits(dataset_name, subset_name)
-        try:
-            num_labels = len(self.dataset['train'].features['label'].names)
-        except:
-            num_labels = 2
+        self.dataset, num_labels = return_splits(dataset_name, subset_name)
         self.model = STR2MODEL_TYPE[model_type].from_pretrained(model_name, num_labels=num_labels)
+        
+        if hasattr(self.model.config, "id2label") and len(self.model.config.id2label) == num_labels:
+            id2label = self.model.config.id2label
+        else:
+            id2label = {i: v for i, v in enumerate(self.dataset['train'].features['label'].names)}
+            label2id = {v: k for k, v in id2label.items()}
+            self.model.config.id2label = id2label
+            self.model.config.label2id = label2id
+
         if use_peft:
             peft_config = LoraConfig(**peft_params)
             self.model = get_peft_model(self.model, peft_config)
         self.padding_fn = STR2PADDING[model_type]
         self.pre_evaluation = pre_evaluation
         self.optimizer = optimizer(self.model.parameters(), **optimizer_params)
+        tokenizer_params['dataset'] = self.dataset
         self.tokenizer = STR2TOKENIZER[dataset_name][subset_name](tokenizer_name, **tokenizer_params)
         self.tokenized_dataset = self.dataset.map(self.tokenizer.tokenize, batched=True)
         self.metrics = STR2METRICS[dataset_name][subset_name](
