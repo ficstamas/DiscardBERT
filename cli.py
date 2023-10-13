@@ -56,7 +56,7 @@ args_.add_argument("--tokenizer_max_length", type=int)
 
 # elimination parameters
 args_.add_argument("--elimination", type=str, choices=flatten_type(EliminationType))
-args_.add_argument("--range", action="extend", nargs=2, type=int, dest="elimination_range")
+args_.add_argument("--range", nargs=2, type=int, dest="elimination_range")
 args_.add_argument("--exact_layers", action="extend", nargs="+", type=int, dest="elimination_exact_layers")
 
 # lr scheduler
@@ -126,17 +126,30 @@ if args.use_wandb:
     import wandb
     wandb.init(project=args.wandb_project, entity=args.wandb_entity, config=args)
 
-trainer_params = {
-    "exit_params": {
-        "exit_condition": args.exit_condition,
-        "max_depth": args.max_depth,
-        "max_tolerance": args.max_tolerance,
-        "selection_criteria": args.selection_criteria
-    },
-    "target_metrics": args.target_metrics,
-    "dilation_step": args.dilation_step,
-    "recursive_steps": args.recursive_steps
-}
+if args.training_command == 'simple':
+    trainer_params = {
+        "exit_params": {
+            "exit_condition": None,
+            "max_depth": None,
+            "max_tolerance": None,
+            "selection_criteria": None
+        },
+        "target_metrics": None,
+        "dilation_step": None,
+        "recursive_steps": None
+    }
+elif args.training_command == 'recursive':
+    trainer_params = {
+        "exit_params": {
+            "exit_condition": args.exit_condition,
+            "max_depth": args.max_depth,
+            "max_tolerance": args.max_tolerance,
+            "selection_criteria": args.selection_criteria
+        },
+        "target_metrics": args.target_metrics,
+        "dilation_step": args.dilation_step,
+        "recursive_steps": args.recursive_steps
+    }
 
 loop = Loop(
     model_name=args.model_name,
