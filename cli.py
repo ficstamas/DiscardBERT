@@ -36,6 +36,7 @@ args_.add_argument("--num_epoch", type=int, default=3)
 args_.add_argument("--batch_size", type=int, default=16)
 args_.add_argument("--seed", type=int, default=42)
 args_.add_argument("--device", type=str, choices=["cuda", "cpu"], default="cpu")
+args_.add_argument("--device_id", type=int, default=0)
 
 # optimizer parameters
 args_.add_argument("--optimizer", type=str, choices=flatten_type(OptimType), default="adamw")
@@ -177,7 +178,7 @@ loop.train(
     logging_interval=args.logging_interval,
     use_wandb=args.use_wandb,
     initial_model=args.initial_model,
-    device=args.device
+    device=args.device if args.device == "cpu" else f"{args.device}:{args.device_id}"
 )
 
 loop.eval(use_wandb=args.use_wandb)
