@@ -9,3 +9,4 @@ scipy
 scikit-learn
 accelerate
 peft==0.4.*
+seqeval

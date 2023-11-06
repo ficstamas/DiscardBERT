@@ -72,6 +72,8 @@ class Loop:
         self.pre_evaluation = pre_evaluation
         self.optimizer = optimizer(self.model.parameters(), **optimizer_params)
         tokenizer_params['dataset'] = self.dataset
+        if "roberta" in tokenizer_name:
+            tokenizer_params['add_prefix_space'] = True
         self.tokenizer = STR2TOKENIZER[dataset_name][subset_name](tokenizer_name, **tokenizer_params)
         self.tokenized_dataset = self.dataset.map(self.tokenizer.tokenize, batched=True)
         self.metrics = STR2METRICS[dataset_name][subset_name](
