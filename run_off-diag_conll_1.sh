@@ -1,5 +1,5 @@
 run_off-diag_conll_0.shseeds=(0 1 2 3 4)
-models=("bert-base-uncased" "roberta-base" "distilbert-base-uncased" "bert-large-uncased")
+models=("roberta-base")
 
 for model in ${models[@]}
 do
