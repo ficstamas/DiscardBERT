@@ -134,3 +134,4 @@ jobs/
 media/
 data/
 wandb/
+scripts/artifacts/
