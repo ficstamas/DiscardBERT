@@ -1,4 +1,4 @@
-run_off-diag_conll_0.shseeds=(0 1 2 3 4)
+seeds=(0 1 2 3 4)
 models=("roberta-base")
 
 for model in ${models[@]}

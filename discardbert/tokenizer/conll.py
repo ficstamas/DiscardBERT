@@ -13,8 +13,10 @@ class CONLLTokenizer(Tokenizer):
         self.dataset = dataset
 
     def tokenize(self, examples):
+        if "is_split_into_words" not in self.kwargs:
+            self.kwargs["is_split_into_words"] = True
         tokenized_inputs = self.tokenizer(
-            examples["tokens"], is_split_into_words=True, **self.kwargs
+            examples["tokens"], **self.kwargs
         )
 
         """
