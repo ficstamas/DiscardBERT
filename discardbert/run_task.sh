@@ -20,6 +20,6 @@ do
 
   for seed in ${seeds[@]}
   do
-    python cli.py --wandb_project "recursive" --seed $seed --batch_size 16 --initial_model "pfdf" --device "cuda:$gpu" --model_name $model --subset_name "$task" --tokenizer_name $model --tokenizer_truncation "longest_first" --tokenizer_max_length 256 --use_wandb recursive --target_metrics "$metric" --recursive_steps "off_diagonal"
+    python cli.py --wandb_project "recursive_nldb" --seed $seed --batch_size 16 --initial_model "pfdf" --device "cuda:$gpu" --model_name $model --subset_name "$task" --tokenizer_name $model --tokenizer_truncation "longest_first" --tokenizer_max_length 256 --use_wandb recursive --target_metrics "$metric" --recursive_steps "off_diagonal"
   done
 done
