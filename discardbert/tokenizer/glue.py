@@ -2,7 +2,7 @@ from .base import Tokenizer
 from typing import Dict, Literal, Type
 
 
-GLUEType = Literal["rte", "cola", "mrpc", "sst2", "qnli", "ax", "mnli", "qqp", "stsb", "wnli"]
+GLUEType = Literal["rte", "cola", "mrpc", "sst2", "qnli", "ax", "mnli", "qqp", "stsb", "wnli", "mnli_matched", "mnli_mismatched"]
 
 
 class GLUETokenizer(Tokenizer):
@@ -94,6 +94,8 @@ STR2GLUE_TASK: Dict[GLUEType, Type[GLUETokenizer]] = {
     "qnli": QNLITokenizer,
     "ax": AXTokenizer,
     "mnli": MNLITokenizer,
+    "mnli_matched": MNLITokenizer,
+    "mnli_mismatched": MNLITokenizer,
     "qqp": QQPTokenizer,
     "stsb": STSBTokenizer,
     "wnli": WNLITokenizer,

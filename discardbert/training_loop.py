@@ -74,6 +74,7 @@ class Loop:
         tokenizer_params['dataset'] = self.dataset
         if "roberta" in tokenizer_name:
             tokenizer_params['add_prefix_space'] = True
+        if "conll" in dataset_name:
             tokenizer_params['is_split_into_words'] = True
         self.tokenizer = STR2TOKENIZER[dataset_name][subset_name](tokenizer_name, **tokenizer_params)
         self.tokenized_dataset = self.dataset.map(self.tokenizer.tokenize, batched=True)

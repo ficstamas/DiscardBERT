@@ -1,4 +1,4 @@
-while getopts g:m flag
+while getopts ":g:m:" flag
 do
     case "${flag}" in
         g) gpu=${OPTARG};;

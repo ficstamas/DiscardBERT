@@ -8,9 +8,10 @@ def return_splits(dataset: str, subset: str) -> DatasetDict:
         val = ds['validation'].train_test_split(train_size=0.5, seed=0)
         ds['validation'] = val['train']
         ds['test'] = val['test']
-        num_labels = len(ds['train'].features['label'].names)
         if subset == "stsb":
             num_labels = 1
+        else:
+            num_labels = len(ds['train'].features['label'].names)
     elif dataset == "wanli":
         ds = load_dataset("alisawuffles/WANLI")
         # rename 'gold' to 'label'
