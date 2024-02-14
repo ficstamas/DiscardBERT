@@ -6,7 +6,7 @@ do
     esac
 done
 
-tasks=("qqp" "stsb" "mnli_matched" "mnli_mismatched")
+tasks=("sst2" "qnli" "stsb")
 seeds=(0 1 2 3 4)
 
 for task in ${tasks[@]}
